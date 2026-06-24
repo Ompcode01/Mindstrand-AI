@@ -1,0 +1,38 @@
+MindShield AI — Prototyping & Setup Guide
+=========================================
+
+This project contains three distinct components:
+1. WEB: The Next.js SOC Dashboard
+2. API: The FastAPI Backend & Python Simulator
+3. MOBILE: The Flutter Companion App
+
+PREREQUISITES:
+--------------
+- Node.js & npm (for the web app)
+- Python 3.9+ (for the backend)
+- Flutter SDK (for the mobile app)
+
+HOW TO RUN MANUALLY:
+--------------------
+1. Run the Web Dashboard:
+   cd web
+   npm install
+   npm run dev
+   => Available at http://localhost:3000
+
+2. Run the FastAPI Backend:
+   cd api
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
+   => Available at http://localhost:8000
+
+3. Run the Flutter Mobile App:
+   cd mobile
+   flutter pub get
+   flutter run
+   => Will launch on your connected device, emulator, or Windows desktop target.
+
+AUTOMATED START:
+----------------
+Simply double-click the "setup.bat" file in this directory. 
+It will automatically open three separate command prompt windows to start the Web, Backend, and Mobile services simultaneously for your prototyping phase.
