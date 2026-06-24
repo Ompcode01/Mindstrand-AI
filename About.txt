@@ -1,0 +1,105 @@
+================================================================================
+MINDSTRAND AI (MINDSHIELD) - PROJECT SYSTEMATIC OVERVIEW
+================================================================================
+
+1. SYSTEMATIC INFORMATION & WHAT HAS BEEN DONE
+--------------------------------------------------------------------------------
+Mindstrand AI (MindShield) is a behavioral health monitoring and intervention platform, primarily functioning as an SOC (Security Operations Center) Dashboard for human behavioral health. It specializes in tracking and intervening in Internet Gaming Disorder (IGD) and Body Dysmorphic Disorder (BDD).
+
+What has been done so far:
+- Complete foundational architecture setup with three main components: a Web Dashboard, a Python/FastAPI Backend Simulator, and a Flutter Mobile App.
+- Database schemas configured with comprehensive risk tracking (assessments, gaming sessions, journal entries, physiological data).
+- Seed data generated to simulate a 14-day escalating risk trajectory for demo purposes.
+- Core UI structures and API routing mechanisms are in place.
+- Automated startup scripts (setup.bat) for simultaneous execution of the environment.
+
+2. COMPONENT & SCRIPT ARCHITECTURE (WHAT DOES WHAT)
+--------------------------------------------------------------------------------
+We are utilizing a microservice-like architecture. Here is what the different scripts and directories are responsible for:
+
+WEB (Next.js Dashboard):
+- `package.json`: Manages the frontend dependencies (Radix UI, Tailwind, Supabase SSR, Recharts, Zustand).
+- `app/`: Contains the React/Next.js pages. This is the main routing hub for the SOC dashboard.
+- `components/`: Houses reusable UI elements (charts, tables, modals) for visualizing the user's risk scores.
+- `lib/`: Contains Zustand state management and Supabase client initializations.
+
+API (FastAPI Backend):
+- `main.py`: The entry point for the backend server. Initializes API routes and WebSockets.
+- `routers/`: Maps the HTTP endpoints for the frontend and mobile app to fetch user data and submit journal entries.
+- `models/`: Defines the Pydantic data schemas representing our database tables (Users, Assessments, Gaming Sessions).
+- `services/`: Contains the business logic, such as risk calculation algorithms and the Google Generative AI integrations for analyzing journal sentiment.
+- `database.py`: Handles connection pooling and queries to Supabase.
+
+MOBILE (Flutter Companion App):
+- `lib/main.dart`: The bootup script for the mobile app, managing local state and UI rendering.
+- `pubspec.yaml`: Manages mobile dependencies. The mobile app acts as the user-facing data collection tool (journaling, wearable syncing).
+
+SUPABASE (Database):
+- `migrations/`: SQL files that create our tables (profiles, assessments, risk_scores).
+- `seed.sql`: Injects dummy data representing a high-risk user profile, including fake gaming sessions, mock BDD assessments, and a 14-day escalating composite risk score.
+
+3. REAL-LIFE APPLICATIONS & SITUATIONAL USE CASES
+--------------------------------------------------------------------------------
+- Clinical Therapy & Counseling: Therapists can use the SOC Dashboard to monitor patients' progress remotely, looking for early warning signs of relapses into IGD or severe BDD episodes.
+- Parental Controls & Monitoring: Parents can link their child's gaming accounts or wearable devices to receive alerts when gaming durations become hazardous or sleep is chronically disrupted.
+- Esports Organizations: Teams can monitor the mental health and burnout levels of professional gamers, ensuring they are not developing unhealthy attachments or destructive habits.
+- Individual Self-Regulation: Users struggling with their behavioral health can use the mobile app for daily grounding exercises, AI-analyzed journaling, and habit tracking.
+
+4. CURRENT TECHNOLOGY STACK & DATA
+--------------------------------------------------------------------------------
+- Frontend Framework: Next.js 14+ (React)
+- Styling: Tailwind CSS & Radix UI (Accessible primitive components)
+- Backend API: Python FastAPI with Uvicorn
+- Mobile App: Flutter
+- Database & Auth: Supabase (PostgreSQL)
+- AI Integration: Google Generative AI (Gemini) for sentiment analysis
+- Current Data State: We are currently using **Dummy Seed Data** for hackathon/presentation purposes. The database is populated with realistic, escalating 14-day data for a demo user to showcase the dashboard's visualization capabilities.
+
+5. WEARABLES IMPLEMENTATION WITHIN THE DASHBOARD
+--------------------------------------------------------------------------------
+Info: 
+Wearable devices (like Apple Watch, Garmin, or Fitbit) track physiological markers such as Heart Rate (HR), Heart Rate Variability (HRV), and sleep duration. In the context of Mindstrand, high sustained HR during gaming, paired with low sleep duration, acts as a severe risk multiplier for IGD.
+
+Implementation (Demo & Real):
+- Mobile App (Real): The Flutter app uses packages like `health` (for Apple Health) or `google_fit_api` to request user permissions and fetch daily sleep and HR aggregates.
+- Backend Sync: The Flutter app sends this data via a POST request to `/api/wearables/sync`.
+- Dashboard Visualization: The Next.js dashboard fetches this data and displays a "Sleep vs. Gaming Duration" overlay chart using `Recharts`. If sleep drops below 4 hours while gaming exceeds 6 hours, a red alert banner is rendered on the SOC Dashboard.
+
+6. NOTIFICATIONS & ALERTS
+--------------------------------------------------------------------------------
+Info:
+Alerts must be real-time to allow for immediate intervention when a user hits a critical risk threshold (e.g., severe BDD distress or 8+ hours of continuous gaming).
+
+Implementation:
+- WebSockets: The FastAPI backend utilizes `websockets` to maintain a persistent connection with the Next.js Dashboard. 
+- Trigger: When a new risk score is calculated in the backend and exceeds a threshold (e.g., Risk Tier goes from "Moderate" to "High"), the backend pushes a JSON payload over the WebSocket.
+- UI Response: The Next.js dashboard uses a global `Zustand` store to catch this payload and triggers a Radix UI `Toast` notification (e.g., "CRITICAL: User Alex has exceeded 8 hours of gaming. Intervention required.").
+
+7. SCREENBLOCKING FOR HIGH GAMING TIMER (DEMO: POKI.COM)
+--------------------------------------------------------------------------------
+Info:
+To demonstrate active intervention, the system forces a break when an extreme time limit is breached. For the demo, we simulate this by monitoring browser activity on "poki.com" for 5 minutes.
+
+Implementation (Demo Python Script):
+We can run a local background Python script using `psutil` or `pygetwindow` (on Windows) to track the active window title.
+1. The script checks every 10 seconds if "Poki" is in the active window title.
+2. It increments a timer. 
+3. Once the timer hits 300 seconds (5 minutes), it executes a `tkinter` (Python GUI) script.
+4. The `tkinter` script creates an "always-on-top", full-screen, borderless black window with the message: 
+   "MindShield Intervention: Excessive gaming detected. Your screen is locked for 5 minutes to allow for emotional regulation and physical movement."
+5. The window prevents the user from clicking behind it and disables the close button for the duration of the cooldown.
+
+8. BDD CONFRONTATION: LOGIN BOOT SEQUENCE
+--------------------------------------------------------------------------------
+Info:
+Users dealing with Body Dysmorphic Disorder (BDD) often engage in repetitive mirror-checking or experience high distress before even starting their day. The boot sequence serves as a mandatory "grounding" intervention before they can access their stats or standard apps.
+
+Implementation:
+- UI Flow: When the user opens the Flutter mobile app (or the Next.js user portal), they are intercepted by a "Boot Sequence" modal before the main dashboard loads.
+- The Questions: The modal forces them to answer three sliders/questions:
+  1. "On a scale of 1-10, how intense is your distress regarding your appearance right now?"
+  2. "How many times have you checked the mirror in the last hour?"
+  3. "Identify one neutral fact about yourself (e.g., I have brown eyes, I am wearing a blue shirt)."
+- Processing: These answers are POSTed to the FastAPI backend. 
+- AI Response: The backend uses Google Generative AI to generate a personalized, clinical, grounding response based on their inputs (e.g., "I see your distress is at an 8. Remember that BDD warps perception. Let's focus on the neutral fact you provided.").
+- Access Granted: Only after reading this response does the "Proceed to Dashboard" button unlock.
