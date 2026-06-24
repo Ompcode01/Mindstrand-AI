@@ -1,0 +1,23 @@
+name: mindshield_mobile
+description: MindShield AI Mental Health Operations Center Mobile App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.1.0
+  lucide_icons: ^1.0.0
+  fl_chart: ^0.65.0
+  animate_do: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
