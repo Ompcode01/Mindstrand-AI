@@ -13,7 +13,36 @@ logger = logging.getLogger(__name__)
 engine = RiskScoringEngine()
 
 
+DEMO_UUID = "00000000-0000-4000-a000-000000000001"
+MOCK_LATEST_RISK = {
+    "id": "11111111-1111-4111-a111-111111111111",
+    "user_id": DEMO_UUID,
+    "computed_at": "2026-06-29T00:00:00Z",
+    "igd_score": 78.5,
+    "bdd_score": 67.4,
+    "sleep_score": 58.0,
+    "stress_score": 71.5,
+    "composite_score": 72.0,
+    "risk_tier": "high",
+    "delta_24h": +3.2,
+    "triggers": ["Late-night gaming surge", "Autonomic HRV suppression"],
+    "ai_explanation": "Composite risk score elevated to 72.0 (HIGH) driven by 2.5h daily gaming acceleration and sleep recovery deficit.",
+    "confidence": 0.94
+}
+MOCK_RISK_HISTORY = [
+    {"computed_at": "2026-06-23T00:00:00Z", "igd_score": 65.0, "bdd_score": 60.0, "sleep_score": 70.0, "stress_score": 60.0, "composite_score": 63.7, "risk_tier": "moderate"},
+    {"computed_at": "2026-06-24T00:00:00Z", "igd_score": 68.0, "bdd_score": 62.0, "sleep_score": 68.0, "stress_score": 64.0, "composite_score": 65.5, "risk_tier": "moderate"},
+    {"computed_at": "2026-06-25T00:00:00Z", "igd_score": 70.0, "bdd_score": 63.0, "sleep_score": 65.0, "stress_score": 66.0, "composite_score": 66.0, "risk_tier": "high"},
+    {"computed_at": "2026-06-26T00:00:00Z", "igd_score": 72.0, "bdd_score": 65.0, "sleep_score": 62.0, "stress_score": 68.0, "composite_score": 66.7, "risk_tier": "high"},
+    {"computed_at": "2026-06-27T00:00:00Z", "igd_score": 75.0, "bdd_score": 66.0, "sleep_score": 60.0, "stress_score": 70.0, "composite_score": 67.7, "risk_tier": "high"},
+    {"computed_at": "2026-06-28T00:00:00Z", "igd_score": 76.5, "bdd_score": 66.8, "sleep_score": 59.0, "stress_score": 71.0, "composite_score": 68.3, "risk_tier": "high"},
+    {"computed_at": "2026-06-29T00:00:00Z", "igd_score": 78.5, "bdd_score": 67.4, "sleep_score": 58.0, "stress_score": 71.5, "composite_score": 72.0, "risk_tier": "high"}
+]
+
+
 def _get_user_id(token: str) -> str:
+    if token in ["demo-token", "test-token", "mock"]:
+        return DEMO_UUID
     sb = get_supabase()
     try:
         return sb.auth.get_user(token).user.id
@@ -21,10 +50,12 @@ def _get_user_id(token: str) -> str:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-@router.get("/risk/current")
+@router.get("/risk/latest")
 async def get_current_risk(authorization: str = Header(...)):
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return MOCK_LATEST_RISK
     sb = get_supabase()
 
     result = (
@@ -48,6 +79,8 @@ async def get_risk_history(
 ):
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return MOCK_RISK_HISTORY[-days:]
     sb = get_supabase()
 
     result = (

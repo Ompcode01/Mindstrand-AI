@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2, Clock, Zap, Target, AlertTriangle, Shield, Send } from "lucide-react";
+import { Gamepad2, Clock, Zap, Target, AlertTriangle, Shield, Send, Moon } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
 import { GlassPanel } from "@/components/shared/risk-ui";
 

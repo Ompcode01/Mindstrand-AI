@@ -9,7 +9,34 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+DEMO_UUID = "00000000-0000-4000-a000-000000000001"
+MOCK_INTERVENTIONS = [
+    {
+        "id": "22222222-2222-4222-a222-222222222222",
+        "user_id": DEMO_UUID,
+        "title": "Evening Blue-Light & Screen Cutoff",
+        "description": "Engage wind-down protocol at 10:30 PM to prevent circadian misalignment and sleep recovery drag.",
+        "category": "sleep",
+        "urgency": "immediate",
+        "status": "active",
+        "created_at": "2026-06-29T00:00:00Z"
+    },
+    {
+        "id": "33333333-3333-4333-a333-333333333333",
+        "user_id": DEMO_UUID,
+        "title": "Autonomic Coherence Breathing",
+        "description": "Perform 5 minutes of resonant breathing (5.5s inhale / 5.5s exhale) to restore HRV autonomic balance.",
+        "category": "physiological",
+        "urgency": "scheduled",
+        "status": "active",
+        "created_at": "2026-06-29T00:00:00Z"
+    }
+]
+
+
 def _get_user_id(token: str) -> str:
+    if token in ["demo-token", "test-token", "mock"]:
+        return DEMO_UUID
     sb = get_supabase()
     try:
         return sb.auth.get_user(token).user.id
@@ -17,13 +44,17 @@ def _get_user_id(token: str) -> str:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-@router.get("/interventions")
+@router.get("/interventions/active")
 async def get_interventions(
     authorization: str = Header(...),
     status: str = "active",
 ):
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        if status != "all":
+            return [i for i in MOCK_INTERVENTIONS if i["status"] == status]
+        return MOCK_INTERVENTIONS
     sb = get_supabase()
 
     query = sb.table("interventions").select("*").eq("user_id", user_id).order("created_at", desc=True)

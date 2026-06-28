@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "MindShield AI — SOC Behavioral Screenblocker",
+  "version": "1.0.0",
+  "description": "Production Manifest V3 digital boundary intervention engine with ephemeral-safe timer tracking and grounding cooldown screens.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MindShield AI Status"
+  }
+}

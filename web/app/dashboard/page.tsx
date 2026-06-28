@@ -99,7 +99,7 @@ export default function MHOCDashboard() {
       <main className="flex-1 flex flex-col px-4 pb-4 min-h-0 z-10 gap-4">
         
         {/* Row 2: Fixed Top KPIs (180px height to leave room for content below) */}
-        <div className="grid grid-cols-12 gap-4 h-[160px] lg:h-[180px] shrink-0">
+        <div className="grid grid-cols-12 gap-4 h-[200px] lg:h-[220px] shrink-0">
           <div className="col-span-2 h-full">
             <WellnessScore compositeScore={snapshot.composite_score} delta24h={snapshot.delta_24h} />
           </div>
@@ -127,7 +127,7 @@ export default function MHOCDashboard() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-6 border-b border-white/[0.06] pb-2 shrink-0 px-2">
+        <div className="flex items-center gap-6 border-b border-white/[0.06] pb-2 shrink-0 px-2 relative z-20">
           <button 
             onClick={() => setActiveTab('INTELLIGENCE')}
             className={`flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase pb-2 -mb-[9px] border-b-2 transition-all ${activeTab === 'INTELLIGENCE' ? 'text-[#a78bff] border-[#a78bff]' : 'text-[#4a4860] border-transparent hover:text-[#8b8aa0]'}`}

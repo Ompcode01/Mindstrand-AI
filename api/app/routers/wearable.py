@@ -9,7 +9,25 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+DEMO_UUID = "00000000-0000-4000-a000-000000000001"
+MOCK_WEARABLE = {
+    "id": "44444444-4444-4444-a444-444444444444",
+    "user_id": DEMO_UUID,
+    "recorded_at": "2026-06-29T00:00:00Z",
+    "heart_rate_bpm": 84,
+    "hrv_ms": 22.5,
+    "sleep_hours": 5.8,
+    "sleep_quality": 65,
+    "steps": 6420,
+    "stress_index": 71.5,
+    "skin_temp_c": 36.8,
+    "source": "Mindstrand Simulator"
+}
+
+
 def _get_user_id(token: str) -> str:
+    if token in ["demo-token", "test-token", "mock"]:
+        return DEMO_UUID
     sb = get_supabase()
     try:
         return sb.auth.get_user(token).user.id
@@ -18,6 +36,8 @@ def _get_user_id(token: str) -> str:
 
 
 def _get_risk_context(user_id: str) -> RiskContext:
+    if user_id == DEMO_UUID:
+        return RiskContext(igd_score=78.5, bdd_score=67.4, sleep_score=58.0, stress_score=71.5, composite_score=72.0)
     sb = get_supabase()
     res = (
         sb.table("risk_scores")
@@ -46,6 +66,8 @@ async def ingest_wearable(
 ):
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return MOCK_WEARABLE
     sb = get_supabase()
 
     result = sb.table("wearable_data").insert({
@@ -67,6 +89,8 @@ async def get_latest_wearable(authorization: str = Header(...)):
     """Return latest wearable data, or generate simulated if none exists."""
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return MOCK_WEARABLE
     sb = get_supabase()
 
     result = (

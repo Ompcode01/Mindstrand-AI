@@ -23,6 +23,10 @@ from app.routers import (
     insights,
     websocket,
     reports,
+    bdd,
+    physiological,
+    fusion,
+    prediction,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -68,6 +72,21 @@ def create_app() -> FastAPI:
     app.include_router(insights.router, prefix=prefix, tags=["Insights"])
     app.include_router(websocket.router, prefix=prefix, tags=["WebSocket"])
     app.include_router(reports.router, prefix=prefix, tags=["Reports"])
+    app.include_router(bdd.router, prefix=prefix, tags=["BDD"])
+    app.include_router(physiological.router, prefix=prefix, tags=["Physiological"])
+    app.include_router(fusion.router, prefix=prefix, tags=["Fusion"])
+    app.include_router(prediction.router, prefix=prefix, tags=["Prediction"])
+
+    @app.get("/")
+    async def root():
+        return {
+            "name": "MindShield AI Backend",
+            "version": "1.0.0",
+            "status": "operational",
+            "docs_url": "/docs",
+            "health_url": "/health",
+            "api_prefix": "/api/v1"
+        }
 
     @app.get("/health")
     async def health_check():

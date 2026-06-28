@@ -399,3 +399,8 @@ class RiskScoringEngine:
         total = len(sources)
         base = 0.60
         return _clamp(base + (present / total) * 0.40, 0.60, 0.98)
+
+
+# Backwards compatibility alias
+RiskEngine = RiskScoringEngine
+

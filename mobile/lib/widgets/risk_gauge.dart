@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../core/theme.dart';
 
 class RiskGauge extends StatelessWidget {
@@ -34,7 +33,7 @@ class RiskGauge extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(LucideIcons.activity, color: color, size: 14),
+            Icon(Icons.monitor_heart, color: color, size: 14),
             const SizedBox(width: 4),
             Text(
               dimension,

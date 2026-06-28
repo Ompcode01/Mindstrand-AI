@@ -8,6 +8,18 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+DEMO_UUID = "00000000-0000-4000-a000-000000000001"
+MOCK_PROFILE = {
+    "id": DEMO_UUID,
+    "email": "demo@mindstrand.ai",
+    "full_name": "Demo User",
+    "age": 28,
+    "gender": "Non-binary",
+    "risk_tier": "high",
+    "created_at": "2026-06-01T00:00:00Z"
+}
+
+
 @router.post("/auth/sync-profile")
 async def sync_profile(
     data: ProfileCreate,
@@ -15,6 +27,8 @@ async def sync_profile(
 ):
     """Called after Supabase signup to create a profile row."""
     token = authorization.replace("Bearer ", "")
+    if token in ["demo-token", "test-token", "mock"]:
+        return MOCK_PROFILE
     sb = get_supabase()
 
     try:
@@ -45,9 +59,11 @@ async def sync_profile(
         raise HTTPException(status_code=500, detail="Failed to create profile")
 
 
-@router.get("/users/me")
+@router.get("/auth/me")
 async def get_me(authorization: str = Header(...)):
     token = authorization.replace("Bearer ", "")
+    if token in ["demo-token", "test-token", "mock"]:
+        return MOCK_PROFILE
     sb = get_supabase()
 
     try:

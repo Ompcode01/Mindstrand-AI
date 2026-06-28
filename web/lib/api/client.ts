@@ -34,7 +34,7 @@ export const syncProfile = (token: string, data: { full_name: string; age: numbe
   request("/api/v1/auth/sync-profile", { method: "POST", body: JSON.stringify(data), token });
 
 export const getMe = (token: string) =>
-  request("/api/v1/users/me", { token });
+  request("/api/v1/auth/me", { token });
 
 // ─── Assessments ───
 export const submitAssessment = (token: string, data: { type: string; responses: Record<string, number> }) =>
@@ -45,7 +45,7 @@ export const getAssessment = (token: string, type: string) =>
 
 // ─── Risk ───
 export const getCurrentRisk = (token: string) =>
-  request("/api/v1/risk/current", { token });
+  request("/api/v1/risk/latest", { token });
 
 export const getRiskHistory = (token: string, days = 14) =>
   request(`/api/v1/risk/history?days=${days}`, { token });
@@ -86,7 +86,7 @@ export const getMoodHistory = (token: string, days = 14) =>
 
 // ─── Interventions ───
 export const getInterventions = (token: string, status = "active") =>
-  request(`/api/v1/interventions?status=${status}`, { token });
+  request(`/api/v1/interventions/active?status=${status}`, { token });
 
 export const updateIntervention = (token: string, id: string, status: string) =>
   request(`/api/v1/interventions/${id}`, { method: "PUT", body: JSON.stringify({ status }), token });
@@ -111,7 +111,20 @@ export async function streamInsights(token: string, onChunk: (text: string) => v
   const decoder = new TextDecoder();
   while (true) {
     const { done, value } = await reader.read();
-    if (done) break;
     onChunk(decoder.decode(value, { stream: true }));
   }
 }
+
+// ─── AI Engine Evaluations ───
+export const evaluateBDD = (token: string, payload: object) =>
+  request("/api/v1/bdd/evaluate", { method: "POST", body: JSON.stringify(payload), token });
+
+export const evaluatePhysiological = (token: string, payload: object) =>
+  request("/api/v1/physiological/evaluate", { method: "POST", body: JSON.stringify(payload), token });
+
+export const evaluateFusion = (token: string, payload: object) =>
+  request("/api/v1/fusion/evaluate", { method: "POST", body: JSON.stringify(payload), token });
+
+export const evaluatePrediction = (token: string, payload: object) =>
+  request("/api/v1/prediction/evaluate", { method: "POST", body: JSON.stringify(payload), token });
+

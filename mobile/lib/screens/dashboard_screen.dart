@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../core/theme.dart';
 import '../core/mock_data.dart';
 import '../widgets/glass_panel.dart';
@@ -64,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(LucideIcons.sparkles, color: AppTheme.accent, size: 16),
+                  const Icon(Icons.auto_awesome, color: AppTheme.accent, size: 16),
                   const SizedBox(width: 8),
                   Text("GEMINI 2.0 ANALYSIS", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppTheme.accent)),
                 ],
@@ -96,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                isCritical ? LucideIcons.alertTriangle : LucideIcons.activity, 
+                isCritical ? Icons.warning_amber_rounded : Icons.show_chart, 
                 color: isCritical ? AppTheme.critical : AppTheme.warning,
                 size: 20,
               ),
@@ -132,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: AppTheme.primary,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(LucideIcons.shield, color: Colors.white, size: 16),
+              child: const Icon(Icons.security, color: Colors.white, size: 16),
             ),
             const SizedBox(width: 12),
             Column(
@@ -159,9 +158,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(LucideIcons.activity), label: "Intelligence"),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.database), label: "Live Streams"),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.users), label: "Roster"),
+          BottomNavigationBarItem(icon: Icon(Icons.insights), label: "Intelligence"),
+          BottomNavigationBarItem(icon: Icon(Icons.storage), label: "Live Streams"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Roster"),
         ],
       ),
     );

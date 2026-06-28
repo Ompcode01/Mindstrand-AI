@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 // ─── Animation Variants ───
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number = 0) => ({
     opacity: 1,

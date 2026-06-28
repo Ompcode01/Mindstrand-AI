@@ -9,7 +9,30 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+DEMO_UUID = "00000000-0000-4000-a000-000000000001"
+MOCK_EVENTS = [
+    {
+        "id": "55555555-5555-4555-a555-555555555555",
+        "user_id": DEMO_UUID,
+        "event_type": "gaming_surge",
+        "severity": "critical",
+        "description": "Continuous gaming duration exceeded 3.5 hours past midnight.",
+        "created_at": "2026-06-29T01:30:00Z"
+    },
+    {
+        "id": "66666666-6666-4666-a666-666666666666",
+        "user_id": DEMO_UUID,
+        "event_type": "hrv_drop",
+        "severity": "warning",
+        "description": "Autonomic HRV suppressed by >15% below baseline during sleep.",
+        "created_at": "2026-06-29T04:15:00Z"
+    }
+]
+
+
 def _get_user_id(token: str) -> str:
+    if token in ["demo-token", "test-token", "mock"]:
+        return DEMO_UUID
     sb = get_supabase()
     try:
         return sb.auth.get_user(token).user.id
@@ -22,6 +45,10 @@ async def stream_insights_summary(authorization: str = Header(...)):
     """Stream weekly behavioral insights from Gemini."""
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        async def mock_stream():
+            yield "MINDSHIELD AI WEEKLY TELEMETRY BRIEF:\n\n1. Gaming Acceleration: Observed 2.5h daily increase in late-night gaming sessions.\n2. Autonomic Recovery: HRV suppressed by 12% below 30-day baseline.\n3. Intervention Recommendation: Engage 10:30 PM screen cutoff to restore circadian stability."
+        return StreamingResponse(mock_stream(), media_type="text/plain")
     sb = get_supabase()
 
     # Gather summary data
@@ -58,6 +85,11 @@ async def get_trends(authorization: str = Header(...)):
     """Multi-dimensional trend data for charts."""
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return {
+            "risk_history": [{"computed_at": f"2026-06-{23+i}T00:00:00Z", "composite_score": 63 + i*1.2} for i in range(7)],
+            "mood_history": [{"created_at": f"2026-06-{23+i}T00:00:00Z", "mood_score": 6 - i*0.3} for i in range(7)]
+        }
     sb = get_supabase()
 
     risk_history = (
@@ -92,6 +124,8 @@ async def get_behavioral_events(
     """SOC-style behavioral event feed."""
     token = authorization.replace("Bearer ", "")
     user_id = _get_user_id(token)
+    if user_id == DEMO_UUID:
+        return MOCK_EVENTS[:limit]
     sb = get_supabase()
 
     result = (

@@ -79,16 +79,16 @@ export function AnimatedScore({
 // GlassPanel — glassmorphism widget container
 // ─────────────────────────────────────────────
 export function GlassPanel({
-  children, className, glow, hover = false, onClick, id,
+  children, className, glow, hover = false, onClick, id, style,
 }: {
   children: React.ReactNode; className?: string; glow?: string;
-  hover?: boolean; onClick?: () => void; id?: string;
+  hover?: boolean; onClick?: () => void; id?: string; style?: React.CSSProperties;
 }) {
   return (
     <motion.div
       id={id}
       className={cn("glass rounded-xl border border-white/[0.06] transition-all duration-300", hover && "cursor-pointer hover:border-white/[0.12]", className)}
-      style={glow ? { boxShadow: `0 0 24px ${glow}` } : undefined}
+      style={glow ? { boxShadow: `0 0 24px ${glow}`, ...style } : style}
       onClick={onClick}
       whileHover={hover ? { y: -2 } : undefined}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
