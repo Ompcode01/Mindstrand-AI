@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import logging
+import asyncio
 
 from app.config import get_settings
 from app.routers import (
@@ -27,7 +28,9 @@ from app.routers import (
     physiological,
     fusion,
     prediction,
+    telemetry,
 )
+from app.services.telemetry_engine import telemetry_engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,8 +39,12 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🛡️  MindShield AI backend starting...")
+    logger.info("🚀 Starting Hybrid Telemetry Engine (7 sub-engines)...")
+    engine_task = asyncio.create_task(telemetry_engine.start())
     yield
     logger.info("🛡️  MindShield AI backend shutting down...")
+    telemetry_engine.stop()
+    engine_task.cancel()
 
 
 def create_app() -> FastAPI:
@@ -76,6 +83,7 @@ def create_app() -> FastAPI:
     app.include_router(physiological.router, prefix=prefix, tags=["Physiological"])
     app.include_router(fusion.router, prefix=prefix, tags=["Fusion"])
     app.include_router(prediction.router, prefix=prefix, tags=["Prediction"])
+    app.include_router(telemetry.router, prefix=prefix, tags=["Telemetry"])
 
     @app.get("/")
     async def root():

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Shield, Bell, User, Activity, Database, Users } from "lucide-react";
+import { Shield, Bell, User, Activity, Database, Users, Settings } from "lucide-react";
 import Link from "next/link";
 
 // Import all MHOC widgets
@@ -17,6 +17,7 @@ import { AIInsightsPanel } from "@/components/dashboard/ai-insights-panel";
 import { EventFeed } from "@/components/dashboard/event-feed";
 import { AlertTimeline } from "@/components/dashboard/alert-timeline";
 import { UserRiskTable } from "@/components/dashboard/user-risk-table";
+import { LiveTelemetryPanel } from "@/components/dashboard/live-telemetry-panel";
 
 // Import types & mocks
 import { 
@@ -42,6 +43,9 @@ function CommandStrip({ alertCount }: { alertCount: number }) {
         </Link>
         <Link href="/dashboard/insights" className="text-[10px] font-mono text-[#8b8aa0] hover:text-[#a78bff] transition-colors">
           [AI THERAPIST]
+        </Link>
+        <Link href="/dashboard/settings" className="text-[10px] font-mono text-[#8b8aa0] hover:text-[#22d3a0] transition-colors flex items-center gap-1">
+          <Settings className="w-3 h-3" /> [SETTINGS]
         </Link>
         
         <div className="w-px h-6 bg-white/10 mx-2" />
@@ -158,10 +162,13 @@ export default function MHOCDashboard() {
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
                 className="absolute inset-0 grid grid-cols-12 gap-4 h-full"
               >
-                <div className="col-span-7 h-full min-h-0">
+                <div className="col-span-4 h-full min-h-0">
                   <WeeklyTrendCharts data={trends} />
                 </div>
-                <div className="col-span-5 h-full min-h-0">
+                <div className="col-span-4 h-full min-h-0 overflow-hidden">
+                  <LiveTelemetryPanel />
+                </div>
+                <div className="col-span-4 h-full min-h-0">
                   <AIInsightsPanel insights={insights} report={explainability} />
                 </div>
               </motion.div>

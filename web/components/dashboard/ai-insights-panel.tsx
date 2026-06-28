@@ -72,17 +72,51 @@ function InsightCard({ insight, index, isStreaming }: { insight: AIInsightBlock;
 }
 
 export function AIInsightsPanel({
-  insights,
+  insights: initialInsights,
   report
 }: {
   insights: AIInsightBlock[];
   report: ExplainabilityReport | null;
 }) {
   const [isStreaming, setIsStreaming] = useState(false);
+  const [liveInsights, setLiveInsights] = useState<AIInsightBlock[]>(initialInsights);
+
+  const fetchLiveGemini = async () => {
+    setIsStreaming(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/insights/explain_scores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer demo-token"
+        },
+        body: JSON.stringify({
+          igd_score: 81.0,
+          bdd_score: 67.0,
+          physiological_score: 68.0,
+          fusion_score: 72.0,
+          prediction_score: 75.0
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveInsights(data);
+        }
+      }
+    } catch (e) {
+      console.error("Failed fetching live Gemini explanations", e);
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveGemini();
+  }, []);
 
   const handleRegenerate = () => {
-    setIsStreaming(true);
-    setTimeout(() => setIsStreaming(false), 2500); // Mock streaming duration
+    fetchLiveGemini();
   };
 
   return (
@@ -109,7 +143,7 @@ export function AIInsightsPanel({
       </div>
 
       <div className="p-4 overflow-y-auto scrollbar-hide flex-grow space-y-4">
-        {insights.map((insight, i) => (
+        {liveInsights.map((insight, i) => (
           <InsightCard 
             key={insight.id} 
             insight={insight} 
